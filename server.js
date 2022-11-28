@@ -7,27 +7,25 @@ const cTable = require('console.table');
 const mysql = require('mysql2');
 //IMPORT CHALK FOR COOL LOOKING CONSOLE TEXT
 const chalk = require('chalk');
+//USE DOTENV TO HIDE PASSWORD ON GITHUB
 require('dotenv').config()
 
 const { default: nodeTest } = require('node:test');
 const log = console.log;
 
-
-
-
 const PORT = process.env.PORT || 3001;
 const app = express();
 
-// Express middleware
+// EXPRESS MIDDLEWARE
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Connect to database
+// CONNECT TO DATABASE
 const db = mysql.createConnection(
   {
     host: 'localhost',
     user: 'root',
-    password: process.env.DB_PASSWORD, //'password',
+    password: process.env.DB_PASSWORD, 
     database: 'employee_db'
   },
   console.log(`Connected to the employee_db database.`)
@@ -51,8 +49,7 @@ connected = () => {
   mainFunc();
 
 };
-//START PROGRAM
-
+//MAIN PROGRAM
 function mainFunc() {
 
   inquirer
@@ -94,7 +91,7 @@ function mainFunc() {
           }
       });
 }
-
+// VIEW ALL DEPARTMENTS FUNCTION
 function viewAllDept() {
   db.query('SELECT * FROM employee_db.department;', function (err, results) {
     console.log("");
@@ -109,6 +106,7 @@ function viewAllDept() {
     mainFunc();
   });
 }
+// VIEW ALL ROLES FUNCTION
 function viewAllRoles() {
   db.query(`SELECT role.id, role.title, department.name AS department, role.salary
             FROM role
@@ -193,9 +191,7 @@ function addRole() {
           },
         ])
           .then((deptChoice) => {
-            console.log(deptChoice);
             newRole.push(deptChoice.dept);
-            console.log(newRole);
 
             const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
 
@@ -209,7 +205,7 @@ function addRole() {
       });
     });
 }
-
+// ADD EMPLOYEE FUNCTION
 function addEmployee() {
 
   inquirer.prompt([
@@ -277,7 +273,7 @@ function addEmployee() {
     });
 }  
 
-//ADD ROLE FUNCTION
+// UPDATE EMPLOYEE FUNCTION
 function updateEmployee() {
 
   db.query('SELECT employee.id, employee.first_name, employee.last_name FROM employee;', function (err, results) {
@@ -329,7 +325,7 @@ function updateEmployee() {
       });
   });
 }
-
+// BONUS FUNCTION TO DELETE A DEPARTMENT 
 function deleteDept() {
 
   db.query('SELECT department.id, department.name FROM employee_db.department;', function (err, results) {
@@ -364,7 +360,7 @@ function deleteDept() {
         });
       });
 }
-
+// BONUS FUNCTION TO DELETE AN EMPLOYEE 
 function deleteEmp() {
 
   db.query('SELECT employee.id, employee.first_name, employee.last_name FROM employee_db.employee;', function (err, results) {
@@ -381,12 +377,9 @@ function deleteEmp() {
       },
     ])
       .then((empChoice) => {
-        console.log(empChoice);
-
 
         let sql = `DELETE FROM employee WHERE id = ?`;
 
-        // delete a row with id 10
         db.query(sql, empChoice.emp, (error, results) => {
           if (error)
             return console.error(error.message);
@@ -402,7 +395,7 @@ function deleteEmp() {
         });
       });
 }
-
+// BONUS FUNCTION TO DELETE A ROLE
 function deleteRole() {
 
   db.query('SELECT role.id, role.title FROM employee_db.role;', function (err, results) {
@@ -419,12 +412,9 @@ function deleteRole() {
       },
     ])
       .then((roleChoice) => {
-        console.log(roleChoice);
-
 
         let sql = `DELETE FROM role WHERE id = ?`;
 
-        // delete a row with id 10
         db.query(sql, roleChoice.role, (error, results) => {
           if (error)
             return console.error(error.message);
